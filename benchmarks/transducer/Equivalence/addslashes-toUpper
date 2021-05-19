@@ -1,0 +1,80 @@
+(set-logic QF_S)
+;----------------
+; addslashes
+; -----------------
+; http://php.net/manual/en/function.addslashes.php
+; "\"    = 92;
+; """    = 34;
+; "'"    = 39;
+; "\x00" = 0;
+
+(define-funs-rec ((addslashes  ((x String) (y String)) Bool)
+                  (as1  ((x String) (y String)) Bool)
+                  (as2  ((x String) (y String)) Bool)
+                  (as3  ((x String) (y String)) Bool)
+                  (as4  ((x String) (y String)) Bool)) (
+
+                  ; definition of addslashes
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv92 8)) ; '\'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as1 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv34 8)) ; '"'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv39 8)) ; '\''
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as3 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv0  8)) ; '\x00'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as4 (seq-tail x) (seq-tail y)))
+            (and (= (seq-head x) (seq-head y))            ; x <=> y
+                           (and (not (= (seq-head x) (_ bv39  8)))  ; '\''
+                                (not (= (seq-head x) (_ bv34  8)))  ; '"'
+                                (not (= (seq-head x) (_ bv92  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv0   8)))) ; '\x00'
+                           (addslashes (seq-tail x) (seq-tail y))))
+
+                  ; definition of as1
+                  (and (= (seq-head y) (_ bv92 8))  ; '\'
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as2
+                  (and (= (seq-head y) (_ bv34 8)) ; '"'
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as3
+                  (and (= (seq-head y) (_ bv39 8)) ; '\''
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as4
+                  (and (= (seq-head y) (_ bv0  8)) ; '\x00'
+                       (addslashes x (seq-tail y)))
+
+                  )
+)
+; to-uppercase transducer
+
+(define-fun-rec toUpper ((x String) (y String)) Bool
+  (or (and (= x "") (= y ""))
+      (and (= (seq-head y)
+              (ite (and (bvule (_ bv97 8) (seq-head x))   ; 'a'
+                        (bvule (seq-head x) (_ bv122 8))) ; 'z'
+                   (bvsub (seq-head x) (_ bv32 8))        ; 'a' -> 'A', etc.
+                   (seq-head x)))
+           (toUpper (seq-tail x) (seq-tail y))))
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (addslashes x u))
+(assert (toUpper x w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x22")) (not (str.in.re wi (str.to.re "\x22"))))) (and (str.in.re ui (str.to.re "\x5C")) (not (str.in.re wi (str.to.re "\x5C"))))) (and (str.in.re ui (str.to.re "\x27")) (not (str.in.re wi (str.to.re "\x27")))))))
+(check-sat)(get-model)

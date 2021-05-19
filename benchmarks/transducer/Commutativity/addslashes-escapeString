@@ -1,0 +1,413 @@
+(set-logic QF_S)
+;----------------
+; addslashes
+; -----------------
+; http://php.net/manual/en/function.addslashes.php
+; "\"    = 92;
+; """    = 34;
+; "'"    = 39;
+; "\x00" = 0;
+
+(define-funs-rec ((addslashes  ((x String) (y String)) Bool)
+                  (as1  ((x String) (y String)) Bool)
+                  (as2  ((x String) (y String)) Bool)
+                  (as3  ((x String) (y String)) Bool)
+                  (as4  ((x String) (y String)) Bool)) (
+
+                  ; definition of addslashes
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv92 8)) ; '\'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as1 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv34 8)) ; '"'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv39 8)) ; '\''
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as3 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv0  8)) ; '\x00'
+                           (= (seq-head y) (_ bv92 8)) ; '\'
+                           (as4 (seq-tail x) (seq-tail y)))
+            (and (= (seq-head x) (seq-head y))            ; x <=> y
+                           (and (not (= (seq-head x) (_ bv39  8)))  ; '\''
+                                (not (= (seq-head x) (_ bv34  8)))  ; '"'
+                                (not (= (seq-head x) (_ bv92  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv0   8)))) ; '\x00'
+                           (addslashes (seq-tail x) (seq-tail y))))
+
+                  ; definition of as1
+                  (and (= (seq-head y) (_ bv92 8))  ; '\'
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as2
+                  (and (= (seq-head y) (_ bv34 8)) ; '"'
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as3
+                  (and (= (seq-head y) (_ bv39 8)) ; '\''
+                       (addslashes x (seq-tail y)))
+
+                  ; definition of as4
+                  (and (= (seq-head y) (_ bv0  8)) ; '\x00'
+                       (addslashes x (seq-tail y)))
+
+                  )
+)
+; ----------------
+; escapeString
+; -----------------
+; https://github.com/google/closure-library/blob/master/closure/goog/string/string.js#L1005
+
+(define-funs-rec ((escapeString ((x String) (y String)) Bool)
+                  (es1        ((x String) (y String)) Bool)
+                  (es2        ((x String) (y String)) Bool)
+                  (es3        ((x String) (y String)) Bool)
+                  (es4        ((x String) (y String)) Bool)
+                  (es5        ((x String) (y String)) Bool)
+                  (es6        ((x String) (y String)) Bool)
+                  (es7        ((x String) (y String)) Bool)
+                  (es8        ((x String) (y String)) Bool)
+                  (es9        ((x String) (y String)) Bool)
+                  (es10       ((x String) (y String)) Bool)
+                  (es11       ((x String) (y String)) Bool)
+                  (es12       ((x String) (y String)) Bool)
+                  (es13       ((x String) (y String)) Bool)
+                  (es14       ((x String) (y String)) Bool)) (
+                  ; definition of escapeString
+                  (or (and (or (and (bvult (_ bv31 8) (seq-head x))
+                                    (bvult (seq-head x) (_ bv34 8)))
+                               (and (bvult (_ bv34 8) (seq-head x))
+                                    (bvult (seq-head x) (_ bv39 8)))
+                               (and (bvult (_ bv39 8) (seq-head x))
+                                    (bvult (seq-head x) (_ bv92 8)))
+                               (and (bvult (_ bv92 8) (seq-head x))
+                                    (bvult (seq-head x) (_ bv127 8))))
+                           (= (seq-head x) (seq-head y))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head y) (_ bv92 8)) ; y = '\'
+                           (es1 x (seq-tail y)))
+                      (and (= x "") (= y "")))
+                           
+                  ; definition of es1
+                  (es2 x y)
+                  ;(and (= (seq-head y) (_ bv92 8))    ; y = '\'
+                  ;     (es2 x (seq-tail y)))
+
+                  ; definition of es2
+                  (or (and (= (seq-head x) (_ bv0 8))   ; '\0'
+                           (= (seq-head y) (_ bv0 8))   ; '\0'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv8  8))  ; '\b'
+                           (= (seq-head y) (_ bv98 8))  ; 'b'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv12  8)) ; '\f'
+                           (= (seq-head y) (_ bv102 8)) ; 'f'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv10  8)) ; '\n'
+                           (= (seq-head y) (_ bv110 8)) ; 'n'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv13  8)) ; '\r'
+                           (= (seq-head y) (_ bv114 8)) ; 'r'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv9   8)) ; '\t'
+                           (= (seq-head y) (_ bv116 8)) ; 't'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv39  8)) ; '\''
+                           (= (seq-head y) (_ bv39  8)) ; '\''
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv34  8)) ; '\"'
+                           (= (seq-head y) (_ bv34  8)) ; '\"'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv92  8)) ; '\\'
+                           (= (seq-head y) (_ bv92  8)) ; '\\'
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head y) (_ bv120 8)) ; y = 'x'
+                           (es3 x (seq-tail y))))
+                   
+                  ; definition es3
+                  (or (and (= (seq-head y) (_ bv48 8)) ; y = '0'
+                           (es4 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv49 8)) ; y = '1'
+                           (es5 x (seq-tail y)))
+                      (and (= (seq-head x) (_ bv127 8))
+                           (= (seq-head y) (_ bv55 8))
+                           (es6 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head y) (_ bv56 8))
+                           (es7 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv57 8))
+                           (es8 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv65 8))
+                           (es9 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv66 8))
+                           (es10 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv67 8))
+                           (es11 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv68 8))
+                           (es12 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv69 8))
+                           (es13 x (seq-tail y)))
+                      (and (= (seq-head y) (_ bv70 8))
+                           (es14 x (seq-tail y))))
+                           
+                  ; definition of es4 0-15 to hex
+                  (or (and (bvule (_ bv0 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv9 8))
+                           (= (seq-head y) (bvadd (seq-head x) (_ bv48 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv10 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv11 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv12 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv13 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv14 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv15 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es5 16-31 to hex
+                  (or (and (bvule (_ bv16 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv25 8))
+                           (= (seq-head y) (bvadd (seq-head x) (_ bv32 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv26 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv27 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv28 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv29 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv30 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv31 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                  
+                  ; definition of es6 12 to hex
+                  (and (= (seq-head y) (_ bv70 8))
+                       (escapeString x (seq-tail y)))
+                       
+                  ; definition of es7 128-143 to hex
+                  (or (and (bvule (_ bv128 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv137 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv80 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv138 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv139 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv140 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv141 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv142 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv143 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es8 144-159 to hex
+                  (or (and (bvule (_ bv144 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv153 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv96 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv154 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv155 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv156 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv157 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv158 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv159 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es9 160-175 to hex
+                  (or (and (bvule (_ bv160 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv169 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv112 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv170 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv171 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv172 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv173 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv174 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv175 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es10 176-191 to hex
+                  (or (and (bvule (_ bv176 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv185 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv128 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv186 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv187 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv188 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv189 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv190 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv191 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es11 192-207 to hex
+                  (or (and (bvule (_ bv192 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv201 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv144 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv202 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv203 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv204 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv205 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv206 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv207 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                  
+                  ; definition of es12 208-223 to hex
+                  (or (and (bvule (_ bv208 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv217 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv160 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv218 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv219 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv220 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv221 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv222 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv223 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es13 224-239 to hex
+                  (or (and (bvule (_ bv224 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv233 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv176 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv234 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv235 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv236 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv237 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv238 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv239 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                           
+                  ; definition of es14 240-255 to hex
+                  (or (and (bvule (_ bv240 8) (seq-head x))
+                           (bvule (seq-head x) (_ bv249 8))
+                           (= (seq-head y) (bvsub (seq-head x) (_ bv192 8)))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv250 8))
+                           (= (seq-head y) (_ bv65 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv251 8))
+                           (= (seq-head y) (_ bv66 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv252 8))
+                           (= (seq-head y) (_ bv67 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv253 8))
+                           (= (seq-head y) (_ bv68 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv254 8))
+                           (= (seq-head y) (_ bv69 8))
+                           (escapeString (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv255 8))
+                           (= (seq-head y) (_ bv70 8))
+                           (escapeString (seq-tail x) (seq-tail y))))
+                  )
+)
+
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (addslashes x y))
+(assert (escapeString y u))
+(assert (addslashes x z))
+(assert (escapeString z w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x22")) (not (str.in.re wi (str.to.re "\x22"))))) (and (str.in.re ui (str.to.re "\x5C")) (not (str.in.re wi (str.to.re "\x5C"))))) (and (str.in.re ui (str.to.re "\x27")) (not (str.in.re wi (str.to.re "\x27")))))))
+(check-sat)(get-model)

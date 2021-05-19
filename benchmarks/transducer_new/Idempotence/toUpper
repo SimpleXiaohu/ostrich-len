@@ -1,0 +1,24 @@
+(define-fun-rec toUpper ((x String) (y String)) Bool
+  (or (and (= x "") (= y ""))
+      (and (not (= x "")) (not (= y ""))
+           (= (char.code (str.head y))
+              (ite (and (<= 97 (char.code (str.head x)))   ; 'a'
+                        (<= (char.code (str.head x)) 122)) ; 'z'
+                   (- (char.code (str.head x)) 32)         ; 'a' -> 'A', etc.
+                   (char.code (str.head x))))
+           (toUpper (str.tail x) (str.tail y))))
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (toUpper x u))
+(assert (toUpper u w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x41")) (not (str.in.re wi (str.to.re "\x41"))))) (and (str.in.re ui (str.to.re "\x42")) (not (str.in.re wi (str.to.re "\x42"))))) (and (str.in.re ui (str.to.re "\x43")) (not (str.in.re wi (str.to.re "\x43"))))) (and (str.in.re ui (str.to.re "\x44")) (not (str.in.re wi (str.to.re "\x44"))))) (and (str.in.re ui (str.to.re "\x45")) (not (str.in.re wi (str.to.re "\x45"))))) (and (str.in.re ui (str.to.re "\x46")) (not (str.in.re wi (str.to.re "\x46"))))) (and (str.in.re ui (str.to.re "\x47")) (not (str.in.re wi (str.to.re "\x47"))))) (and (str.in.re ui (str.to.re "\x48")) (not (str.in.re wi (str.to.re "\x48"))))) (and (str.in.re ui (str.to.re "\x49")) (not (str.in.re wi (str.to.re "\x49"))))) (and (str.in.re ui (str.to.re "\x4A")) (not (str.in.re wi (str.to.re "\x4A"))))) (and (str.in.re ui (str.to.re "\x4B")) (not (str.in.re wi (str.to.re "\x4B"))))) (and (str.in.re ui (str.to.re "\x4C")) (not (str.in.re wi (str.to.re "\x4C"))))) (and (str.in.re ui (str.to.re "\x4D")) (not (str.in.re wi (str.to.re "\x4D"))))) (and (str.in.re ui (str.to.re "\x4E")) (not (str.in.re wi (str.to.re "\x4E"))))) (and (str.in.re ui (str.to.re "\x4F")) (not (str.in.re wi (str.to.re "\x4F"))))) (and (str.in.re ui (str.to.re "\x50")) (not (str.in.re wi (str.to.re "\x50"))))) (and (str.in.re ui (str.to.re "\x51")) (not (str.in.re wi (str.to.re "\x51"))))) (and (str.in.re ui (str.to.re "\x52")) (not (str.in.re wi (str.to.re "\x52"))))) (and (str.in.re ui (str.to.re "\x53")) (not (str.in.re wi (str.to.re "\x53"))))) (and (str.in.re ui (str.to.re "\x54")) (not (str.in.re wi (str.to.re "\x54"))))) (and (str.in.re ui (str.to.re "\x55")) (not (str.in.re wi (str.to.re "\x55"))))) (and (str.in.re ui (str.to.re "\x56")) (not (str.in.re wi (str.to.re "\x56"))))) (and (str.in.re ui (str.to.re "\x57")) (not (str.in.re wi (str.to.re "\x57"))))) (and (str.in.re ui (str.to.re "\x58")) (not (str.in.re wi (str.to.re "\x58"))))) (and (str.in.re ui (str.to.re "\x59")) (not (str.in.re wi (str.to.re "\x59"))))) (and (str.in.re ui (str.to.re "\x5A")) (not (str.in.re wi (str.to.re "\x5A")))))))
+(check-sat)(get-model)

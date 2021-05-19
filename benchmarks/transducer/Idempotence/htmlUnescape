@@ -1,0 +1,96 @@
+(set-logic QF_S)
+; "&"  = &amp;
+; "<"  = &lt;
+; ">"  = &gt;
+; """  = &quot;
+; "'"  = &#39;
+; "e"  = &#101; ???
+; \x00 = &#0;
+(define-funs-rec ((htmlUnescape  ((x String) (y String)) Bool)
+                  (hu1  ((x String) (y String)) Bool)
+                  (hu2  ((x String) (y String)) Bool)
+                  (hu3  ((x String) (y String)) Bool)
+                  (hu4  ((x String) (y String)) Bool)
+                  (hu5  ((x String) (y String)) Bool)
+                  (hu6  ((x String) (y String)) Bool)
+                  (hu7  ((x String) (y String)) Bool)
+                  (hu8  ((x String) (y String)) Bool)
+                  (hu9  ((x String) (y String)) Bool)) (
+
+                  ; definition of htmlUnescape
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv38 8))         ; '&'
+                           (hu1 (seq-tail x) y))
+                      (and (= (seq-head x) (seq-head y))       ; x <=> y
+                           (not (= (seq-head x) (_ bv38  8)))  ; '&'
+                           (htmlUnescape (seq-tail x) (seq-tail y))))
+
+                  ; definition of hu1
+                  (or (and (= (seq-head x) (_ bv108 8)) ; 'l'
+                           (= (seq-head y) (_ bv60  8)) ; '<' 
+                           (hu2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv103 8)) ; 'g'
+                           (= (seq-head y) (_ bv62  8)) ; '>' 
+                           (hu2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv97  8)) ; 'a'
+                           (= (seq-head y) (_ bv38  8)) ; '&' 
+                           (hu3 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv113 8)) ; 'q'
+                           (= (seq-head y) (_ bv34  8)) ; '\"' 
+                           (hu4 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv35  8)) ; '#'
+                           (hu5 (seq-tail x) y)))
+
+                  ; definition of hu2
+                  (and (= (seq-head x) (_ bv116 8)) ; 't'
+                       (hu6 (seq-tail x) y))
+
+                  ; definition of hu3
+                  (and (= (seq-head x) (_ bv109 8)) ; 'm'
+                       (hu7 (seq-tail x) y))
+
+                  ; definition of hu4
+                  (and (= (seq-head x) (_ bv117 8)) ; 'u'
+                       (hu8 (seq-tail x) y))
+
+                  ; definition of hu5
+                  (or (and (= (seq-head x) (_ bv51 8)) ; '3'
+                           (hu9 (seq-tail x) y))
+                      ;(and (= (seq-head x) (_ bv49 8)) ; '1'
+                      ;     (hu10 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv48 8)) ; '0'
+                           (= (seq-head y) (_ bv0  8)) ; '\0'
+                           (hu6 (seq-tail x) (seq-tail y))))
+
+                  ; definition of hu6
+                  (and (= (seq-head x) (_ bv59 8))     ; ';'
+                       (htmlUnescape (seq-tail x) y))
+
+                  ; definition of hu7
+                  (and (= (seq-head x) (_ bv112 8)) ; 'p'
+                       (hu6 (seq-tail x) y))
+
+                  ; definition of hu8
+                  (and (= (seq-head x) (_ bv111 8)) ; 'o'
+                       (hu2 (seq-tail x) y))
+
+                  ; definition of he9
+                  (and (= (seq-head x) (_ bv57  8)) ; '9'
+                       (= (seq-head y) (_ bv39  8)) ; '\''
+                       (hu6 (seq-tail x) (seq-tail y)))
+                  )
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (htmlUnescape x u))
+(assert (htmlUnescape u w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x22")) (not (str.in.re wi (str.to.re "\x22"))))) (and (str.in.re ui (str.to.re "\x65")) (not (str.in.re wi (str.to.re "\x65"))))) (and (str.in.re ui (str.to.re "\x26")) (not (str.in.re wi (str.to.re "\x26"))))) (and (str.in.re ui (str.to.re "\x27")) (not (str.in.re wi (str.to.re "\x27"))))) (and (str.in.re ui (str.to.re "\x3C")) (not (str.in.re wi (str.to.re "\x3C"))))) (and (str.in.re ui (str.to.re "\x3E")) (not (str.in.re wi (str.to.re "\x3E")))))))
+(check-sat)(get-model)

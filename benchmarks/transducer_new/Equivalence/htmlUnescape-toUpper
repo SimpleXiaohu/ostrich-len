@@ -1,0 +1,116 @@
+(define-funs-rec ((htmlUnescape  ((x String) (y String)) Bool)
+                  (hu1  ((x String) (y String)) Bool)
+                  (hu2  ((x String) (y String)) Bool)
+                  (hu3  ((x String) (y String)) Bool)
+                  (hu4  ((x String) (y String)) Bool)
+                  (hu5  ((x String) (y String)) Bool)
+                  (hu6  ((x String) (y String)) Bool)
+                  (hu7  ((x String) (y String)) Bool)
+                  (hu8  ((x String) (y String)) Bool)
+                  (hu9  ((x String) (y String)) Bool)) (
+
+                  ; definition of htmlUnescape
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 38))         ; '&'
+                           (hu1 (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (str.head y))       ; x <=> y
+                           (not (= (str.head x) (char.from-int 38 )))  ; '&'
+                           (htmlUnescape (str.tail x) (str.tail y)))))
+
+                  ; definition of hu1
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 108)) ; 'l'
+                           (= (str.head y) (char.from-int 60 )) ; '<' 
+                           (hu2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 103)) ; 'g'
+                           (= (str.head y) (char.from-int 62 )) ; '>' 
+                           (hu2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 97 )) ; 'a'
+                           (= (str.head y) (char.from-int 38 )) ; '&' 
+                           (hu3 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 113)) ; 'q'
+                           (= (str.head y) (char.from-int 34 )) ; '\"' 
+                           (hu4 (str.tail x) (str.tail y))))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 35 )) ; '#'
+                           (hu5 (str.tail x) y))))
+
+                  ; definition of hu2
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 116)) ; 't'
+                       (hu6 (str.tail x) y)))
+
+                  ; definition of hu3
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 109)) ; 'm'
+                       (hu7 (str.tail x) y)))
+
+                  ; definition of hu4
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 117)) ; 'u'
+                       (hu8 (str.tail x) y)))
+
+                  ; definition of hu5
+                  (or 
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 51)) ; '3'
+                           (hu9 (str.tail x) y)))
+                      ;(and (= (str.head x) (char.from-int 49)) ; '1'
+                      ;     (hu10 (str.tail x) y))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 48)) ; '0'
+                           (= (str.head y) (char.from-int 0 )) ; '\0'
+                           (hu6 (str.tail x) (str.tail y)))))
+
+                  ; definition of hu6
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 59))     ; ';'
+                       (htmlUnescape (str.tail x) y)))
+
+                  ; definition of hu7
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 112)) ; 'p'
+                       (hu6 (str.tail x) y)))
+
+                  ; definition of hu8
+                  (and (not (= x ""))
+                  (and (= (str.head x) (char.from-int 111)) ; 'o'
+                       (hu2 (str.tail x) y)))
+
+                  ; definition of he9
+                  (and (not (= x "")) (not (= y ""))
+                  (and (= (str.head x) (char.from-int 57 )) ; '9'
+                       (= (str.head y) (char.from-int 39 )) ; '\''
+                       (hu6 (str.tail x) (str.tail y))))
+                  )
+)
+(define-fun-rec toUpper ((x String) (y String)) Bool
+  (or (and (= x "") (= y ""))
+      (and (not (= x "")) (not (= y ""))
+           (= (char.code (str.head y))
+              (ite (and (<= 97 (char.code (str.head x)))   ; 'a'
+                        (<= (char.code (str.head x)) 122)) ; 'z'
+                   (- (char.code (str.head x)) 32)         ; 'a' -> 'A', etc.
+                   (char.code (str.head x))))
+           (toUpper (str.tail x) (str.tail y))))
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (htmlUnescape x u))
+(assert (toUpper x w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x22")) (not (str.in.re wi (str.to.re "\x22"))))) (and (str.in.re ui (str.to.re "\x65")) (not (str.in.re wi (str.to.re "\x65"))))) (and (str.in.re ui (str.to.re "\x26")) (not (str.in.re wi (str.to.re "\x26"))))) (and (str.in.re ui (str.to.re "\x27")) (not (str.in.re wi (str.to.re "\x27"))))) (and (str.in.re ui (str.to.re "\x3C")) (not (str.in.re wi (str.to.re "\x3C"))))) (and (str.in.re ui (str.to.re "\x3E")) (not (str.in.re wi (str.to.re "\x3E")))))))
+(check-sat)(get-model)

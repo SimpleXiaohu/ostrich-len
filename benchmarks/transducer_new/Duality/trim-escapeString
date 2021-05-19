@@ -1,0 +1,605 @@
+(define-funs-rec ((trim  ((x String) (y String)) Bool)
+                  (tr1  ((x String) (y String)) Bool)
+                  (tr2  ((x String) (y String)) Bool)
+                  (tr3  ((x String) (y String)) Bool)) (
+
+                  ; definition of trim
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr1
+                  (or 
+                      (and (= x "") (= y ""))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y))))
+                  )
+)
+(define-funs-rec ((escapeString ((x String) (y String)) Bool)
+                  (es1        ((x String) (y String)) Bool)
+                  (es2        ((x String) (y String)) Bool)
+                  (es3        ((x String) (y String)) Bool)
+                  (es4        ((x String) (y String)) Bool)
+                  (es5        ((x String) (y String)) Bool)
+                  (es6        ((x String) (y String)) Bool)
+                  (es7        ((x String) (y String)) Bool)
+                  (es8        ((x String) (y String)) Bool)
+                  (es9        ((x String) (y String)) Bool)
+                  (es10       ((x String) (y String)) Bool)
+                  (es11       ((x String) (y String)) Bool)
+                  (es12       ((x String) (y String)) Bool)
+                  (es13       ((x String) (y String)) Bool)
+                  (es14       ((x String) (y String)) Bool)) (
+                  ; definition of escapeString
+                  (or 
+                  (and (not (= x "")) (not (= y ""))
+                  (and (or (and (< (char.from-int 31) char.code((str.head x)))
+                                    (< char.code((str.head x)) (char.from-int 34)))
+                               (and (< (char.from-int 34) char.code((str.head x)))
+                                    (< char.code((str.head x)) (char.from-int 39)))
+                               (and (< (char.from-int 39) char.code((str.head x)))
+                                    (< char.code((str.head x)) (char.from-int 92)))
+                               (and (< (char.from-int 92) char.code((str.head x)))
+                                    (< char.code((str.head x)) (char.from-int 127))))
+                           (= (str.head x) (str.head y))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 92)) ; y = '\'
+                           (es1 x (str.tail y))))
+                      (and (= x "") (= y "")))
+                           
+                  ; definition of es1
+                  (es2 x y)
+                  ;(and (= (str.head y) (char.from-int 92))    ; y = '\'
+                  ;     (es2 x (str.tail y)))
+
+                  ; definition of es2
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0))   ; '\0'
+                           (= (str.head y) (char.from-int 0))   ; '\0'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 8 ))  ; '\b'
+                           (= (str.head y) (char.from-int 98))  ; 'b'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 12 )) ; '\f'
+                           (= (str.head y) (char.from-int 102)) ; 'f'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10 )) ; '\n'
+                           (= (str.head y) (char.from-int 110)) ; 'n'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (= (str.head y) (char.from-int 114)) ; 'r'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 9  )) ; '\t'
+                           (= (str.head y) (char.from-int 116)) ; 't'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 39 )) ; '\''
+                           (= (str.head y) (char.from-int 39 )) ; '\''
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 34 )) ; '\"'
+                           (= (str.head y) (char.from-int 34 )) ; '\"'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 92 )) ; '\\'
+                           (= (str.head y) (char.from-int 92 )) ; '\\'
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 120)) ; y = 'x'
+                           (es3 x (str.tail y)))))
+                   
+                  ; definition es3
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 48)) ; y = '0'
+                           (es4 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 49)) ; y = '1'
+                           (es5 x (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 127))
+                           (= (str.head y) (char.from-int 55))
+                           (es6 (str.tail x) (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 56))
+                           (es7 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 57))
+                           (es8 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 65))
+                           (es9 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 66))
+                           (es10 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 67))
+                           (es11 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 68))
+                           (es12 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 69))
+                           (es13 x (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 70))
+                           (es14 x (str.tail y)))))
+                           
+                  ; definition of es4 0-15 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 0) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 9))
+                           (= char.code((str.head y)) (+ char.code((str.head x)) (char.from-int 48)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 12))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 14))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 15))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es5 16-31 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 16) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 25))
+                           (= char.code(char.code((str.head y))) (+ char.code((str.head x)) (char.from-int 32)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 26))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 27))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 28))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 29))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 30))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 31))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                  
+                  ; definition of es6 12 to hex
+                  (and (not (= y ""))
+                  (and (= (str.head y) (char.from-int 70))
+                       (escapeString x (str.tail y))))
+                       
+                  ; definition of es7 128-143 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 128) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 137))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 80)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 138))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 139))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 140))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 141))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 142))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 143))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es8 144-159 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 144) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 153))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 96)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 154))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 155))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 156))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 157))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 158))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 159))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es9 160-175 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 160) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 169))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 112)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 170))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 171))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 172))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 173))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 174))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 175))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es10 176-191 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 176) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 185))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 128)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 186))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 187))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 188))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 189))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 190))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 191))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es11 192-207 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 192) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 201))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 144)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 202))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 203))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 204))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 205))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 206))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 207))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                  
+                  ; definition of es12 208-223 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 208) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 217))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 160)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 218))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 219))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 220))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 221))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 222))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 223))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es13 224-239 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 224) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 233))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 176)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 234))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 235))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 236))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 237))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 238))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 239))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                           
+                  ; definition of es14 240-255 to hex
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (<= (char.from-int 240) char.code((str.head x)))
+                           (<= char.code((str.head x)) (char.from-int 249))
+                           (= char.code((str.head y)) (- char.code((str.head x)) (char.from-int 192)))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 250))
+                           (= (str.head y) (char.from-int 65))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 251))
+                           (= (str.head y) (char.from-int 66))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 252))
+                           (= (str.head y) (char.from-int 67))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 253))
+                           (= (str.head y) (char.from-int 68))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 254))
+                           (= (str.head y) (char.from-int 69))
+                           (escapeString (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 255))
+                           (= (str.head y) (char.from-int 70))
+                           (escapeString (str.tail x) (str.tail y)))))
+                  )
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (trim u y))
+(assert (escapeString y w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x20")) (not (str.in.re wi (str.to.re "\x20"))))) (and (str.in.re ui (str.to.re "\x09")) (not (str.in.re wi (str.to.re "\x09"))))) (and (str.in.re ui (str.to.re "\x0A")) (not (str.in.re wi (str.to.re "\x0A"))))) (and (str.in.re ui (str.to.re "\x0B")) (not (str.in.re wi (str.to.re "\x0B"))))) (and (str.in.re ui (str.to.re "\x0D")) (not (str.in.re wi (str.to.re "\x0D")))))))
+(check-sat)(get-model)

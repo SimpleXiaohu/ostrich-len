@@ -1,0 +1,172 @@
+(define-funs-rec ((trim  ((x String) (y String)) Bool)
+                  (tr1  ((x String) (y String)) Bool)
+                  (tr2  ((x String) (y String)) Bool)
+                  (tr3  ((x String) (y String)) Bool)) (
+
+                  ; definition of trim
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr1
+                  (or 
+                      (and (= x "") (= y ""))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y))))
+                  )
+)
+(define-fun-rec toLower ((x String) (y String)) Bool
+  (or (and (= x "") (= y ""))
+      (and (not (= x "")) (not (= y ""))
+           (= (char.code (str.head y))
+              (ite (and (<= 65 (char.code (str.head x)))   ; 'A'
+                        (<= (char.code (str.head x)) 90)) ; 'Z'
+                   (+ (char.code (str.head x)) 32)         ; 'A' -> 'a', etc.
+                   (char.code (str.head x))))
+           (toLower (str.tail x) (str.tail y))))
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (trim u y))
+(assert (toLower y w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x20")) (not (str.in.re wi (str.to.re "\x20"))))) (and (str.in.re ui (str.to.re "\x09")) (not (str.in.re wi (str.to.re "\x09"))))) (and (str.in.re ui (str.to.re "\x0A")) (not (str.in.re wi (str.to.re "\x0A"))))) (and (str.in.re ui (str.to.re "\x0B")) (not (str.in.re wi (str.to.re "\x0B"))))) (and (str.in.re ui (str.to.re "\x0D")) (not (str.in.re wi (str.to.re "\x0D")))))))
+(check-sat)(get-model)

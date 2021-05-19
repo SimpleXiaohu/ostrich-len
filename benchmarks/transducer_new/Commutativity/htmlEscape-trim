@@ -1,0 +1,312 @@
+(define-funs-rec ((htmlEscape  ((x String) (y String)) Bool)
+                  (he1  ((x String) (y String)) Bool)
+                  (he2  ((x String) (y String)) Bool)
+                  (he3  ((x String) (y String)) Bool)
+                  (he4  ((x String) (y String)) Bool)
+                  (he5  ((x String) (y String)) Bool)
+                  (he6  ((x String) (y String)) Bool)
+                  (he7  ((x String) (y String)) Bool)
+                  (he8  ((x String) (y String)) Bool)
+                  (he9  ((x String) (y String)) Bool)
+                  (he10 ((x String) (y String)) Bool)
+                  (he11 ((x String) (y String)) Bool)
+                  (he12 ((x String) (y String)) Bool)
+                  (he13 ((x String) (y String)) Bool)
+                  (he14 ((x String) (y String)) Bool)
+                  (he15 ((x String) (y String)) Bool)) (
+
+                  ; definition of htmlEscape
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 38)) ; '&'
+                           (= (str.head y) (char.from-int 38)) ; '&'
+                           (he1 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 60)) ; '<'
+                           (= (str.head y) (char.from-int 38)) ; '&'
+                           (he2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 62)) ; '>'
+                           (= (str.head y) (char.from-int 38)) ; '&'
+                           (he3 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 34)) ; '\"'
+                           (= (str.head y) (char.from-int 38)) ; '&'
+                           (he4 (str.tail x) (str.tail y))))
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 38))        ; '&'
+                           (he5 x (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))           ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 39 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 38 )))  ; '&'
+                                (not (= (str.head x) (char.from-int 60 )))  ; '<'
+                                (not (= (str.head x) (char.from-int 62 )))  ; '>'
+                                (not (= (str.head x) (char.from-int 34 )))  ; '\"'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                                ;(not (= (str.head x) (char.from-int 101)))) ; 'e'
+                           (htmlEscape (str.tail x) (str.tail y)))))
+
+                  ; definition of he1
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 97))  ; 'a'
+                           (he6 x (str.tail y)))))
+
+                  ; definition of he2
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 108)) ; 'l'
+                           (he13 x (str.tail y)))))
+
+                  ; definition of he3
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 103)) ; 'g'
+                           (he13 x (str.tail y)))))
+
+                  ; definition of he4
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 113)) ; 'q'
+                           (he7 x (str.tail y)))))
+
+                  ; definition of he5
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 35))  ; '#'
+                           (he8 x (str.tail y)))))
+
+                  ; definition of he6
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 109)) ; 'm'
+                           (he9 x (str.tail y)))))
+
+                  ; definition of he7
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 117)) ; 'u'
+                           (he10 x (str.tail y)))))
+
+                  ; definition of he8
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 39 ))      ; '\''
+                           (= (str.head y) (char.from-int 51 ))      ; '3'
+                           (he11 (str.tail x) (str.tail y))))
+                      ;(and (= (str.head x) (char.from-int 101))      ; 'e'
+                      ;     (= (str.head y) (char.from-int 49 ))      ; '1'
+                      ;     (he12 (str.tail x) (str.tail y)))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0  ))      ; '\x00'
+                           (= (str.head y) (char.from-int 48 ))      ; '0'
+                           (he15 (str.tail x) (str.tail y)))))
+
+                  ; definition of he9
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 112)) ; 'p'
+                           (he15 x (str.tail y)))))
+
+                  ; definition of he10
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 111)) ; 'o'
+                           (he13 x (str.tail y)))))
+
+                  ; definition of he11
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 57))  ; '9'
+                           (he15 x (str.tail y)))))
+
+                  ; definition of he12
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 48))  ; '0'
+                           (he14 x (str.tail y)))))
+
+                  ; definition of he13
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 116)) ; 't'
+                           (he15 x (str.tail y)))))
+
+                  ; definition of he14
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 49))  ; '1'
+                           (he15 x (str.tail y)))))
+
+                  ; definition of he15
+                  (or 
+                      (and (not (= y ""))
+                      (and (= (str.head y) (char.from-int 59))  ; ';'
+                           (htmlEscape x (str.tail y)))))
+                  )
+)
+(define-funs-rec ((trim  ((x String) (y String)) Bool)
+                  (tr1  ((x String) (y String)) Bool)
+                  (tr2  ((x String) (y String)) Bool)
+                  (tr3  ((x String) (y String)) Bool)) (
+
+                  ; definition of trim
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (trim (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (trim (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr1
+                  (or 
+                      (and (= x "") (= y ""))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or 
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (= (str.head y) (char.from-int 32)) ; ' '
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                      	   (= (str.head y) (char.from-int 09)) ; '\t'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (= (str.head y) (char.from-int 10)) ; '\n'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 13)) ; '\r'
+                           (= (str.head y) (char.from-int 13)) ; '\r'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 0 )) ; '\x00'
+                           (= (str.head y) (char.from-int 0 )) ; '\x00'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+                      (and (= (str.head x) (char.from-int 11)) ; '\x0B'
+                           (= (str.head y) (char.from-int 11)) ; '\x0B'
+                           (tr2 (str.tail x) (str.tail y))))
+                      (and (not (= x "")) (not (= y ""))
+					  (and (= (str.head x) (str.head y))            ; x <=> y
+                           (and (not (= (str.head x) (char.from-int 32 )))  ; '\''
+                                (not (= (str.head x) (char.from-int 09 )))  ; '"'
+                                (not (= (str.head x) (char.from-int 10 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 13 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 11 )))  ; '\'
+                                (not (= (str.head x) (char.from-int 0  )))) ; '\x00'
+                           (tr1 (str.tail x) (str.tail y)))))
+
+                  ; definition of tr2
+                  (or (and (= x "") (= y ""))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 32)) ; ' '
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x "")) 
+                      (and (= (str.head x) (char.from-int 09)) ; '\t'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 10)) ; '\n'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 13 )) ; '\r'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 0  )) ; '\x00'
+                           (tr3 (str.tail x) y)))
+                      (and (not (= x ""))
+                      (and (= (str.head x) (char.from-int 11 )) ; '\x0B'
+                           (tr3 (str.tail x) y))))
+                  )
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (htmlEscape x y))
+(assert (trim y u))
+(assert (htmlEscape x z))
+(assert (trim z w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x5C")) (not (str.in.re wi (str.to.re "\x5C"))))) (and (str.in.re ui (str.to.re "\x61")) (not (str.in.re wi (str.to.re "\x61"))))) (and (str.in.re ui (str.to.re "\x22")) (not (str.in.re wi (str.to.re "\x22"))))) (and (str.in.re ui (str.to.re "\x23")) (not (str.in.re wi (str.to.re "\x23"))))) (and (str.in.re ui (str.to.re "\x65")) (not (str.in.re wi (str.to.re "\x65"))))) (and (str.in.re ui (str.to.re "\x26")) (not (str.in.re wi (str.to.re "\x26"))))) (and (str.in.re ui (str.to.re "\x27")) (not (str.in.re wi (str.to.re "\x27"))))) (and (str.in.re ui (str.to.re "\x67")) (not (str.in.re wi (str.to.re "\x67"))))) (and (str.in.re ui (str.to.re "\x6C")) (not (str.in.re wi (str.to.re "\x6C"))))) (and (str.in.re ui (str.to.re "\x6D")) (not (str.in.re wi (str.to.re "\x6D"))))) (and (str.in.re ui (str.to.re "\x6F")) (not (str.in.re wi (str.to.re "\x6F"))))) (and (str.in.re ui (str.to.re "\x30")) (not (str.in.re wi (str.to.re "\x30"))))) (and (str.in.re ui (str.to.re "\x31")) (not (str.in.re wi (str.to.re "\x31"))))) (and (str.in.re ui (str.to.re "\x70")) (not (str.in.re wi (str.to.re "\x70"))))) (and (str.in.re ui (str.to.re "\x33")) (not (str.in.re wi (str.to.re "\x33"))))) (and (str.in.re ui (str.to.re "\x71")) (not (str.in.re wi (str.to.re "\x71"))))) (and (str.in.re ui (str.to.re "\x74")) (not (str.in.re wi (str.to.re "\x74"))))) (and (str.in.re ui (str.to.re "\x75")) (not (str.in.re wi (str.to.re "\x75"))))) (and (str.in.re ui (str.to.re "\x39")) (not (str.in.re wi (str.to.re "\x39"))))) (and (str.in.re ui (str.to.re "\x3B")) (not (str.in.re wi (str.to.re "\x3B"))))) (and (str.in.re ui (str.to.re "\x3C")) (not (str.in.re wi (str.to.re "\x3C"))))) (and (str.in.re ui (str.to.re "\x3E")) (not (str.in.re wi (str.to.re "\x3E")))))))
+(check-sat)(get-model)

@@ -1,0 +1,157 @@
+(set-logic QF_S)
+(set-logic QF_S)
+
+;----------------
+; trim
+; -----------------
+; http://php.net/manual/en/function.trim.php
+; Strip whitespace from the beginning and end of a string
+;    " "    (ASCII 32 (0x20)), an ordinary space.
+;    "\t"   (ASCII 9  (0x09)), a tab.
+;    "\n"   (ASCII 10 (0x0A)), a new line (line feed).
+;    "\r"   (ASCII 13 (0x0D)), a carriage return.
+;    "\0"   (ASCII 0  (0x00)), the NUL-byte.
+;    "\x0B" (ASCII 11 (0x0B)), a vertical tab.
+
+
+(define-funs-rec ((trim  ((x String) (y String)) Bool)
+                  (tr1  ((x String) (y String)) Bool)
+                  (tr2  ((x String) (y String)) Bool)
+                  (tr3  ((x String) (y String)) Bool)) (
+
+                  ; definition of trim
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv32 8)) ; ' '
+                           (trim (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv09 8)) ; '\t'
+                           (trim (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv10 8)) ; '\n'
+                           (trim (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv13  8)) ; '\r'
+                           (trim (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv0   8)) ; '\x00'
+                           (trim (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv11  8)) ; '\x0B'
+                           (trim (seq-tail x) y))
+					  (and (= (seq-head x) (seq-head y))            ; x <=> y
+                           (and (not (= (seq-head x) (_ bv32  8)))  ; '\''
+                                (not (= (seq-head x) (_ bv09  8)))  ; '"'
+                                (not (= (seq-head x) (_ bv10  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv13  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv11  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv0   8)))) ; '\x00'
+                           (tr1 (seq-tail x) (seq-tail y))))
+
+                  ; definition of tr1
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv32 8)) ; ' '
+                           (= (seq-head y) (_ bv32 8)) ; ' '
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv09 8)) ; '\t'
+                      	   (= (seq-head y) (_ bv09 8)) ; '\t'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv10 8)) ; '\n'
+                           (= (seq-head y) (_ bv10 8)) ; '\n'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv13 8)) ; '\r'
+                           (= (seq-head y) (_ bv13 8)) ; '\r'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv0  8)) ; '\x00'
+                           (= (seq-head y) (_ bv0  8)) ; '\x00'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv11 8)) ; '\x0B'
+                           (= (seq-head y) (_ bv11 8)) ; '\x0B'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv32 8)) ; ' '
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv09 8)) ; '\t'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv10 8)) ; '\n'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv13  8)) ; '\r'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv0   8)) ; '\x00'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv11  8)) ; '\x0B'
+                           (tr3 (seq-tail x) y))
+					  (and (= (seq-head x) (seq-head y))            ; x <=> y
+                           (and (not (= (seq-head x) (_ bv32  8)))  ; '\''
+                                (not (= (seq-head x) (_ bv09  8)))  ; '"'
+                                (not (= (seq-head x) (_ bv10  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv13  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv11  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv0   8)))) ; '\x00'
+                           (tr1 (seq-tail x) (seq-tail y))))
+
+                  ; definition of tr2
+                  (or (and (= (seq-head x) (_ bv32 8)) ; ' '
+                           (= (seq-head y) (_ bv32 8)) ; ' '
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv09 8)) ; '\t'
+                      	   (= (seq-head y) (_ bv09 8)) ; '\t'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv10 8)) ; '\n'
+                           (= (seq-head y) (_ bv10 8)) ; '\n'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv13 8)) ; '\r'
+                           (= (seq-head y) (_ bv13 8)) ; '\r'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv0  8)) ; '\x00'
+                           (= (seq-head y) (_ bv0  8)) ; '\x00'
+                           (tr2 (seq-tail x) (seq-tail y)))
+                      (and (= (seq-head x) (_ bv11 8)) ; '\x0B'
+                           (= (seq-head y) (_ bv11 8)) ; '\x0B'
+                           (tr2 (seq-tail x) (seq-tail y)))
+					  (and (= (seq-head x) (seq-head y))            ; x <=> y
+                           (and (not (= (seq-head x) (_ bv32  8)))  ; '\''
+                                (not (= (seq-head x) (_ bv09  8)))  ; '"'
+                                (not (= (seq-head x) (_ bv10  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv13  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv11  8)))  ; '\'
+                                (not (= (seq-head x) (_ bv0   8)))) ; '\x00'
+                           (tr1 (seq-tail x) (seq-tail y))))
+
+                  ; definition of tr2
+                  (or (and (= x "") (= y ""))
+                      (and (= (seq-head x) (_ bv32 8)) ; ' '
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv09 8)) ; '\t'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv10 8)) ; '\n'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv13  8)) ; '\r'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv0   8)) ; '\x00'
+                           (tr3 (seq-tail x) y))
+                      (and (= (seq-head x) (_ bv11  8)) ; '\x0B'
+                           (tr3 (seq-tail x) y)))
+                  )
+)
+
+; to-lowercase transducer
+
+(define-fun-rec toLower ((x String) (y String)) Bool
+  (or (and (= x "") (= y ""))
+      (and (= (seq-head y)
+              (ite (and (bvule (_ bv65 8) (seq-head x))   ; 'A'
+                        (bvule (seq-head x) (_ bv90 8))) ; 'Z'
+                   (bvadd (seq-head x) (_ bv32 8))        ; 'A' -> 'a', etc.
+                   (seq-head x)))
+           (toLower (seq-tail x) (seq-tail y))))
+)
+(declare-fun x   () String)
+(declare-fun z   () String)
+(declare-fun u   () String)
+(declare-fun y   () String)
+(declare-fun w   () String)
+(declare-fun ui   () String)
+(declare-fun wi   () String)
+(declare-fun i   () Int)
+(assert (= ui (str.at u i)))
+(assert (= wi (str.at w i)))
+(assert (trim x y))
+(assert (toLower y u))
+(assert (trim x z))
+(assert (toLower z w))
+(assert (or (not (= (str.len u) (str.len w))) (or (or (or (or (or (or false (and (str.in.re ui (str.to.re "\x00")) (not (str.in.re wi (str.to.re "\x00"))))) (and (str.in.re ui (str.to.re "\x20")) (not (str.in.re wi (str.to.re "\x20"))))) (and (str.in.re ui (str.to.re "\x09")) (not (str.in.re wi (str.to.re "\x09"))))) (and (str.in.re ui (str.to.re "\x0A")) (not (str.in.re wi (str.to.re "\x0A"))))) (and (str.in.re ui (str.to.re "\x0B")) (not (str.in.re wi (str.to.re "\x0B"))))) (and (str.in.re ui (str.to.re "\x0D")) (not (str.in.re wi (str.to.re "\x0D")))))))
+(check-sat)(get-model)

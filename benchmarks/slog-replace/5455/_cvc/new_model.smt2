@@ -1,0 +1,8 @@
+(set-logic QF_S)
+(set-option :strings-exp true)
+(set-option :produce-models true)
+(declare-fun sigmaStar_0 () String)
+(assert (str.in.re sigmaStar_0 (re.++ (re.* re.allchar) (re.++ (str.to.re "\x5c\x3c\x53\x43\x52\x49\x50\x54") (re.* re.allchar)))))
+(assert (< (* 2 (str.indexof sigmaStar_0  "\x61" 0)) (str.len sigmaStar_0 )))
+(check-sat)
+(get-model)
