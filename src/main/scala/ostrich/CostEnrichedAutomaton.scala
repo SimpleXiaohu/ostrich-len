@@ -32,7 +32,12 @@
 
 package ostrich
 
+import ap.parser.ITerm
 import ap.terfor.Formula
+import dk.brics.automaton.{State => BState}
+
+import scala.collection.immutable.List
+import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet, Stack}
 
 /**
  * Trait for automata with atomic/nominal states; i.e., states
@@ -40,6 +45,9 @@ import ap.terfor.Formula
  * initial state, and a set of accepting states.
  */
 trait CostEnrichedAutomaton extends AtomicStateAutomaton {
+
+  type State = BState
+  type TLabel = (Char, Char)
 
   /**
    * Union. This method assumed that <code>this</code> and <code>that</code>
@@ -54,16 +62,45 @@ trait CostEnrichedAutomaton extends AtomicStateAutomaton {
   def &(that : CostEnrichedAutomaton) : CostEnrichedAutomaton
 
   /**
-   * The number of counters available for costs.
+   * registers (i.e. counters of CostEnrichedAutomaton)
    */
-  val counterNum : Int
+  val registers : ArrayBuffer[ITerm]= ArrayBuffer()
+
+  /**
+   * registers op:
+   */
+  def addNewRegister(num : Int): Unit = {
+    for(i <- 1 to num)
+      registers += AllocRegisterTerm()
+  }
+  def addRegisters(rs : Seq[ITerm]): Unit = {
+    registers ++= rs
+  }
+  def setRegisters (rs : ArrayBuffer[ITerm]): Unit = {
+    registers.clear()
+    registers ++= rs
+  }
+  def setRegisters (rs : List[ITerm]): Unit = {
+    registers.clear()
+    registers ++= rs
+  }
+  /**
+   * cloneRegisters : clone register, use the different token
+   */
+  def cloneRegisters(): ArrayBuffer[ITerm]  = {
+    val res : ArrayBuffer[ITerm]= ArrayBuffer()
+    for(i<-registers){
+      res += AllocRegisterTerm()
+    }
+    res
+  }
 
   /**
    * Given a state, iterate over all outgoing transitions, including
    * their label and the costs.
    */
   def outgoingTransitionsWithCost(from : State)
-                                : Iterator[(State, TLabel, Seq[Int])]
+                                : Iterator[(State, TLabel, List[Int])]
   
   def outgoingTransitions(from : State) : Iterator[(State, TLabel)] =
     for ((s, l, _) <- outgoingTransitionsWithCost(from)) yield (s, l)
@@ -85,7 +122,7 @@ trait CostEnrichedAutomaton extends AtomicStateAutomaton {
   /**
    * Iterate over all transitions with costs
    */
-  def transitionsWithCost : Iterator[(State, TLabel, Seq[Int], State)] =
+  def transitionsWithCost : Iterator[(State, TLabel, List[Int], State)] =
     for (s1 <- states.iterator; (s2, lbl, c) <- outgoingTransitionsWithCost(s1))
       yield (s1, lbl, c, s2)
 
@@ -117,5 +154,76 @@ trait CostEnrichedAutomatonBuilder[State, TLabel]
    * automaton cannot change
    */
   def getAutomaton : CostEnrichedAutomaton
+
+}
+
+
+class  CEAutomaton extends CostEnrichedAutomaton {
+
+  /**
+   * Union
+   */
+  def |(that : CostEnrichedAutomaton) : CostEnrichedAutomaton = {
+    // wrong implementation, have not defined
+    that
+  }
+
+  /**
+   * Intersection
+   */
+  def &(that : CostEnrichedAutomaton) : CostEnrichedAutomaton = {
+    val builder = that.getBuilder
+    // from new state to old states pair
+    val sMap = new HashMap[that.State, Seq[Any]]
+    // from old states pair to new state
+    val sMapRev = new HashMap[Seq[Any], that.State]
+    val initState = builder.initialState
+    sMap += initState -> Seq(this.initialState, that.initialState)
+    sMapRev += Seq(this.initialState, that.initialState) -> initState
+
+    if(this.isAccept(this.initialState) && that.isAccept(that.initialState)){
+      builder.setAccept(initState, true)
+    }
+
+    val workList = new Stack[(that.State, Seq[Any])]()
+    workList push ((initState, Seq(this.initialState, that.initialState)))
+    val seenList = new HashSet[Seq[Any]]()
+    seenList += Seq(this.initialState, that.initialState)
+
+    while (!workList.isEmpty){
+      val (state, statePair) = workList.pop()
+      val oldState1 = statePair(0).asInstanceOf[that.State]
+      val oldState2 = statePair(1).asInstanceOf[that.State]
+      for ((state1Prim, lb1, vector1) <- outgoingTransitionsWithCost(oldState1)){
+        for ((state2Prim, lb2, vector2) <- outgoingTransitionsWithCost(oldState2)){
+          val newLbList = builder.LabelOps.intersectLabels(lb1,lb2)
+          for (lb <- newLbList){
+            if(!seenList.contains(Seq(state1Prim, state2Prim))){
+              seenList += Seq(state1Prim, state2Prim)
+              val newState = builder.getNewState
+              sMap += newState -> Seq(state1Prim, state2Prim)
+              sMapRev += Seq(state1Prim, state2Prim) -> newState
+              if(this.isAccept(state1Prim) && that.isAccept(state2Prim)){
+                builder.setAccept(newState, true)
+              }
+              workList push ((newState, Seq(state1Prim, state2Prim)))
+            }
+            val newState = sMapRev(Seq(state1Prim, state2Prim))
+            builder.addTransitionWithCost(state, lb, vector1 ::: vector2, newState)
+          }
+        }
+      }
+    }
+    builder.minimize()
+    builder.getAutomaton
+
+  }
+}
+
+
+class CEAutomatonBuilder
+  extends CostEnrichedAutomatonBuilder
+            [CostEnrichedAutomaton#State,
+              CostEnrichedAutomaton#TLabel] {
 
 }
