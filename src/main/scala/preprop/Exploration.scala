@@ -392,10 +392,10 @@ abstract class Exploration(val funApps : Seq[(PreOp, Seq[Term], Term)],
     var res = 0
     var str = ""
     if(flags.strategy == "-I")
-      str = Seq("./a", flags.strategy, flags.tmpFileName, flags.nuxmvTime, "0") .!!
+      str = Seq("./a", flags.strategy, flags.tmpFileName, flags.nuxmvTime, "0", "2>&1") .!!
     else 
-      str = Seq("./a", flags.strategy, flags.tmpFileName, flags.nuxmvTime,flags.windowSize) .!!
-    print(str)
+      str = Seq("./a", flags.strategy, flags.tmpFileName, flags.nuxmvTime,flags.windowSize, "2>&1") .!!
+    // print(str)
     if(!str.endsWith("\n0\n"))
       // timeout
       res = 2

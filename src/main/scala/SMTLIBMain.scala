@@ -161,7 +161,7 @@ object SMTLIBMain {
     val startTime : Double = new Date().getTime
     println(doMain(args, flag))
     val endTime : Double = new Date().getTime
-    println("use "+(endTime-startTime)/1000.0)
+    println("use "+ (endTime-startTime)/1000.0 + "s")
   }
 
 }
